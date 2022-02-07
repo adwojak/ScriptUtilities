@@ -1,23 +1,17 @@
 from configparser import ConfigParser
+from distutils.util import strtobool  # TODO Something instead of that, slows execution
 from json import loads, JSONDecodeError
 
-
-TYPE_TO_STRING_MAP = {
-    int: "Integer",
-    str: "String",
-    bool: "Boolean",
-    float: "Float",
-    bytes: "Bytes",
-    list: "List"
-}
+TYPE_TO_STRING_MAP = {int: "Integer", str: "String", bool: "Boolean", float: "Float", bytes: "Bytes", list: "List"}
 
 
 class Parameter:
-    def __init__(self, name=None, required=True, default=None, cast_type=str, delimiter=","):
+    def __init__(self, name=None, required=True, default=None, cast_type=str, list_elements_type=str, delimiter=","):
         self.name = name
         self.required = required
         self.default = default
         self.cast_type = cast_type
+        self.list_elements_type = list_elements_type
         self.delimiter = delimiter
 
     def parse_parameter(self, parameter_value):
@@ -29,7 +23,9 @@ class Parameter:
         try:
             return loads(parameter_value)
         except JSONDecodeError:
-            return parameter_value.split(self.delimiter)
+            if self.list_elements_type == bool:
+                return [strtobool(element) for element in parameter_value.split(self.delimiter)]
+            return [self.list_elements_type(element) for element in parameter_value.split(self.delimiter)]
 
 
 class Section:
@@ -50,7 +46,9 @@ class Section:
                 try:
                     section_parsed[key] = parameter.parse_parameter(parameter_value)
                 except ValueError:
-                    self.errors.append(f"Parameter {parameter_name} is not of type {TYPE_TO_STRING_MAP[parameter.cast_type]}")
+                    self.errors.append(
+                        f"Parameter {parameter_name} is not of type {TYPE_TO_STRING_MAP[parameter.cast_type]}"
+                    )
         return section_parsed
 
 
