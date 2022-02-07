@@ -91,3 +91,12 @@ class TestIniConfigParser:
             "Missing parameter named MISSING_PARAMETER2 in configuration file.",
             "Parameter StringValue is not of type Integer",
         ]
+
+    def test_bool_with_bad_value(self):
+        mapping = {
+            "bool_with_bad_value": Section(
+                "REQUIRED_SECTION",
+                bad_value=Parameter(name="BoolListWithBadValue", cast_type=list, list_elements_type=bool),
+            )
+        }
+        assert self.config(mapping).errors[0] == "Elements of list parameter BoolListWithBadValue are not of type Bool"

@@ -1,8 +1,11 @@
 from configparser import ConfigParser
-from distutils.util import strtobool  # TODO Something instead of that, slows execution
 from json import loads, JSONDecodeError
 
 TYPE_TO_STRING_MAP = {int: "Integer", str: "String", bool: "Boolean", float: "Float", bytes: "Bytes", list: "List"}
+
+
+class NonBoolError(Exception):
+    pass
 
 
 class Parameter:
@@ -17,6 +20,8 @@ class Parameter:
     def parse_parameter(self, parameter_value):
         if self.cast_type == list:
             return self.cast_to_list(parameter_value)
+        elif self.cast_type == bool:
+            return self.string_to_bool(parameter_value)
         return self.cast_type(parameter_value)
 
     def cast_to_list(self, parameter_value):
@@ -24,8 +29,18 @@ class Parameter:
             return loads(parameter_value)
         except JSONDecodeError:
             if self.list_elements_type == bool:
-                return [strtobool(element) for element in parameter_value.split(self.delimiter)]
+                return [self.string_to_bool(element) for element in parameter_value.split(self.delimiter)]
             return [self.list_elements_type(element) for element in parameter_value.split(self.delimiter)]
+
+    @staticmethod
+    def string_to_bool(value):
+        value = value.lower()
+        if value in ("y", "yes", "t", "true", "on", "1"):
+            return True
+        elif value in ("n", "no", "f", "false", "off", "0"):
+            return False
+        else:
+            raise NonBoolError
 
 
 class Section:
@@ -49,6 +64,8 @@ class Section:
                     self.errors.append(
                         f"Parameter {parameter_name} is not of type {TYPE_TO_STRING_MAP[parameter.cast_type]}"
                     )
+                except NonBoolError:
+                    self.errors.append(f"Elements of list parameter {parameter_name} are not of type Bool")
         return section_parsed
 
 
