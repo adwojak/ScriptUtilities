@@ -1,4 +1,4 @@
-from ConfigurationParser.ini_config_parser import IniConfigParser, Section, Parameter
+from configuration_parser.ini_config_parser import IniConfigParser, Section, Parameter
 
 
 config_mapping = {
@@ -26,6 +26,6 @@ config_mapping = {
 
 if __name__ == "__main__":
     # For testing purposes
-    config = IniConfigParser("ConfigurationParser/configuration.ini", config_mapping)
+    config = IniConfigParser("configuration_parser/configuration.ini", config_mapping)
     print(config.parsed_config)
     print(config.errors)

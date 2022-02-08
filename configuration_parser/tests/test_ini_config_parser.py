@@ -1,9 +1,9 @@
-from ConfigurationParser.ini_config_parser import IniConfigParser, Section, Parameter
+from configuration_parser.ini_config_parser import IniConfigParser, Section, Parameter
 
 
 class TestIniConfigParser:
     def config(self, mapping):
-        return IniConfigParser("ConfigurationParser/tests/test_config.ini", mapping)
+        return IniConfigParser("configuration_parser/tests/test_config.ini", mapping)
 
     def test_success(self):
         mapping = {
