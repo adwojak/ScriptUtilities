@@ -32,15 +32,16 @@ class Parameter:
                 return [self.string_to_bool(element) for element in parameter_value.split(self.delimiter)]
             return [self.list_elements_type(element) for element in parameter_value.split(self.delimiter)]
 
-    @staticmethod
-    def string_to_bool(value):
+    def string_to_bool(self, value):
         value = value.lower()
         if value in ("y", "yes", "t", "true", "on", "1"):
             return True
         elif value in ("n", "no", "f", "false", "off", "0"):
             return False
         else:
-            raise NonBoolError
+            if self.cast_type == list:
+                raise NonBoolError
+            raise ValueError
 
 
 class Section:
