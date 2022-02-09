@@ -1,31 +1,41 @@
+from logging import getLogger
+
+from arguments_parser.arguments_parser import parse_arguments
 from configuration_parser.ini_config_parser import IniConfigParser, Section, Parameter
+from logger_module.logger_module import setup_logger
 
-
-config_mapping = {
+configuration_mapping = {
     "settings": Section(
         "SETTINGS",
         status_port=Parameter("StatusPort", cast_type=int),
-        archive=Parameter("Archive", cast_type=int),
-        log_file=Parameter("LogFile"),
-        version=Parameter("Version"),
-        optional=Parameter("Optional", required=False, default="Optional value"),
-        second_optional=Parameter(required=False),
+        archive=Parameter("Archive", cast_type=bool),
+        version=Parameter("Version", required=False),
         camel_case_param=Parameter(),
     ),
     "ftp": Section(
-        "FTPXXX",
-        missing_param=Parameter("something")
+        "FTP",
+        ftp_port=Parameter("FTPPort", cast_type=int),
+        ftp_dir=Parameter("FTPDir"),
+        su_user_name=Parameter("SUUserName"),
+        su_password=Parameter("SUPassword"),
     ),
-    "ftp2": Section(
-        "FTPXXX2222",
+    "ftps": Section(
+        "FTPS",
         required=False,
-        missing_param=Parameter("something")
-    )
+        run_ftps=Parameter("RunFTPS", cast_type=bool),
+        ftp_port=Parameter("FTPPort", cast_type=int, required=False, default=990),
+        tftp_dir=Parameter("TFTPDir", required=False),
+        values_list=Parameter("ValuesList", cast_type=list, list_elements_type=int, delimiter=";"),
+    ),
 }
 
-
 if __name__ == "__main__":
-    # For testing purposes
-    config = IniConfigParser("configuration_parser/configuration.ini", config_mapping)
-    print(config.parsed_config)
-    print(config.errors)
+    arguments = parse_arguments()
+    setup_logger(arguments["log_file"], arguments["disable_log"])
+    logger = getLogger()
+    configuration = IniConfigParser(arguments["configuration_file"], configuration_mapping)
+    if configuration.errors:
+        for error in configuration.errors:
+            logger.error(error)
+        exit(f"Errors while reading configuration file. Check {arguments['log_file']} for more details")
+    config = configuration.parsed_config
