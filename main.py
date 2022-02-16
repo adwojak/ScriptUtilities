@@ -1,5 +1,7 @@
 from logging import getLogger
 
+from requests import get as rget
+
 from arguments_parser.arguments_parser import parse_arguments
 from configuration_parser.ini_config_parser import IniConfigParser, Section, Parameter
 from logger_module.logger_module import setup_logger
@@ -39,3 +41,7 @@ if __name__ == "__main__":
             logger.error(error)
         exit(f"Errors while reading configuration file. Check {arguments['log_file']} for more details")
     config = configuration.parsed_config
+    response = rget("https://httpbin.org/ip")
+    origin_ip = response.json()["origin"]
+    logger.info(origin_ip)
+    print(origin_ip)
