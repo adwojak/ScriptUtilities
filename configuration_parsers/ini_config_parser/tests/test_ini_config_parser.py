@@ -3,7 +3,7 @@ from configuration_parser.ini_config_parser import IniConfigParser, Section, Par
 
 class TestIniConfigParser:
     def config(self, mapping):
-        return IniConfigParser("configuration_parser/tests/test_config.ini", mapping)
+        return IniConfigParser("configuration_parsers/tests/test_config.ini", mapping)
 
     def test_success(self):
         mapping = {

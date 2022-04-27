@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "file-version": 1.2,
+  "file-author": "adwojak",
+  "file-date": "27-04-2022",
+  "owners-list": ["Scott", "Jason"],
+  "connections-list": [
+    {
+      "source": "127.0.0.1",
+      "destination": "10.10.10.10"
+    },
+    {
+      "source": "10.10.10.10",
+      "destination": "127.0.0.1"
+    }
+  ],
+  "devices-object": {
+    "first-device": {
+      "enabled": true,
+      "description": "First device",
+      "ip": "127.0.0.1",
+      "mac": "01-23-45-67-89-AB"
+    },
+    "second-device": {
+      "enabled": false,
+      "description": "Second device",
+      "ip": "10.10.10.10",
+      "mac": "AB-AB-AB-AB-AB-AB"
+    }
+  }
+}
